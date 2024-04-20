@@ -1,29 +1,30 @@
-resource "aws_iam_role" "codedeploy-role" {
-  name = "codedeployrole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "ec2.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-  })
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
-  ]
-}
+# resource "aws_iam_role" "codedeploy-role" {
+#   name = "codedeployrole"
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#         {
+#             "Effect": "Allow",
+#             "Principal": {
+#                 "Service": "codedeploy.amazonaws.com"
+#             },
+#             "Action": "sts:AssumeRole"
+#         }
+#     ]
+#   })
+# }
 
-resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
-  name = "codedeploy_instance_profile"
-  role = aws_iam_role.codedeploy-role.name
+# resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
+#   role = aws_iam_role.codedeploy-role.id
+#   policy_arn = "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
+# }
 
-  depends_on = [ aws_iam_role.codedeploy-role ]
-}
+# resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
+#   name = "codedeploy_instance_profile"
+#   role = aws_iam_role.codedeploy-role.name
+
+#   depends_on = [ aws_iam_role.codedeploy-role ]
+# }
 
 module "payments_workers" {
     source     = "./workers"
@@ -115,6 +116,7 @@ resource "aws_codedeploy_deployment_group" "workers-deployment_grp" {
                              "${module.payments_workers.scaling_group_id}"
                              ]
 }
+
 
 ## Application servers
 module "application" {
@@ -222,35 +224,35 @@ resource "aws_lb_listener_rule" "application" {
     }
 }
 
-resource "aws_codedeploy_deployment_group" "application-deployment-grp" {
-    app_name              = "sre-terraform-app"
-    deployment_group_name = "application"
-    service_role_arn      = "arn:aws:iam::053769797169:role/codedeployrole"
+# resource "aws_codedeploy_deployment_group" "application-deployment-grp" {
+#     app_name              = "sre-terraform-app"
+#     deployment_group_name = "application"
+#     service_role_arn      = "arn:aws:iam::053769797169:role/codedeployrole"
 
-    deployment_style {
-        deployment_option = "WITH_TRAFFIC_CONTROL"
-        deployment_type = "IN_PLACE"
-    }
+#     deployment_style {
+#         deployment_option = "WITH_TRAFFIC_CONTROL"
+#         deployment_type = "IN_PLACE"
+#     }
 
-    load_balancer_info {
+#     load_balancer_info {
        
-        target_group_info {
-            name = aws_lb_target_group.application.name
-        }
-    }
+#         target_group_info {
+#             name = aws_lb_target_group.application.name
+#         }
+#     }
 
-    trigger_configuration {
-        trigger_events    = ["DeploymentFailure"]
-        trigger_name      = "On Failed Deployment"
-        trigger_target_arn= aws_sns_topic.sre_challenge.arn
-    }
+#     trigger_configuration {
+#         trigger_events    = ["DeploymentFailure"]
+#         trigger_name      = "On Failed Deployment"
+#         trigger_target_arn= aws_sns_topic.sre_challenge.arn
+#     }
 
-    auto_rollback_configuration {
-        enabled = false
-        events = ["DEPLOYMENT_FAILURE"]
-    }
+#     auto_rollback_configuration {
+#         enabled = false
+#         events = ["DEPLOYMENT_FAILURE"]
+#     }
 
-    autoscaling_groups    = ["${module.application.scaling_group_id}",
-                            ]
-}
+#     autoscaling_groups    = ["${module.application.scaling_group_id}",
+#                             ]
+# }
 

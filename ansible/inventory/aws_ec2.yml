@@ -1,0 +1,11 @@
+plugin: aws_ec2
+regions:
+  - us-west-2
+keyed_groups:
+  # list of tags to use
+  - key: tags.Name
+    separator: "ec2_"
+  - key: tags.Name
+    prefix: "sre_application"
+filters:
+  instance-state-name: running
