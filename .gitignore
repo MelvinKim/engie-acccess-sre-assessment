@@ -1,0 +1,6 @@
+terraform/.terraform
+terraform/*.out
+.venv
+notes.txt
+terraform/remote-backend/.terraform
+*.terraform

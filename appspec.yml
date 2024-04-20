@@ -1,0 +1,32 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/html/django_project
+file_exists_behavior: OVERWRITE
+permissions:
+  - object: /var/www/html/django_project
+    owner: ubuntu
+    group: ubuntu
+    mode: 775
+    type:
+      - directory
+      - file
+hooks:
+  ApplicationStop:
+    - location: scripts/application_stop.sh
+      timeout: 60
+      runas: ubuntu
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 5
+      runas: ubuntu
+  AfterInstall:
+    - location: scripts/after_install.sh
+      timeout: 300
+      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/application_start.sh
+      timeout: 60
+      runas: ubuntu
+
