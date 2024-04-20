@@ -1,0 +1,15 @@
+---
+# tasks to copy alert files
+- name: Copy Rules Files
+  ansible.builtin.copy:
+    src: "{{ rules_source_dir }}"
+    dest: "{{ rules_destination_dir }}"
+    owner: "{{ owner }}"
+    group: "{{ owner }}"
+    mode: "{{ file_permissions }}"
+  tags: copy_rules
+  notify: "Reload Prometheus"
+
+- name: Restart Prometheus
+  command: sudo systemctl restart prometheus
+  tags: reload_prometheus

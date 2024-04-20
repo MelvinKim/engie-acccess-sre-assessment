@@ -1,0 +1,5 @@
+---
+# handlers file for node-exporter
+- name: reload systemd
+  systemd:
+    daemon_reload: true

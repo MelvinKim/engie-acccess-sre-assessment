@@ -1,0 +1,31 @@
+groups:
+  - name: servers
+    rules:
+      - alert: HighCPUUtilization
+        expr: (sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU utilization on instance {{ $labels.instance }}"
+          description: |
+            Instance Name: {{ $labels.instance }}
+            Instance ID: {{ $labels.instance_id }}
+            CPU utilization is at {{ $value }}
+
+      - alert: HighMemoryUtilization
+        expr: >
+          100 - (100 * ((node_memory_MemFree_bytes{instance_state="running"} + node_memory_Cached_bytes{instance_state="running"} + node_memory_Buffers_bytes{instance_state="running"} )
+          /node_memory_MemTotal_bytes)) >= 80
+        for: 10m
+        labels:
+          severity: Warning
+        annotations:
+          summary: "High Memory utilization on instance {{ $labels.instance }}"
+          description: |
+
+            Instance Name: {{ $labels.instance }}
+
+            Instance ID: {{ $labels.instance_id }}
+
+            Memory utilization is at {{ $value }}%.

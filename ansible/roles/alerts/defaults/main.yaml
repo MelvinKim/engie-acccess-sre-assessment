@@ -1,0 +1,7 @@
+---
+# defaults file for alerts
+rules_source_dir: "files/"
+rules_destination_dir: "/etc/prometheus/rules/"
+owner: "root"
+file_permissions: "0644"
+prometheus_name: "prometheus"

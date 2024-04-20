@@ -1,0 +1,124 @@
+---
+# tasks file for prometheus
+- name: update package repositories
+  apt:
+    update_cache: yes
+- name: create prometheus group
+  group:
+    name: prometheus
+    state: present
+- name: create prometheus user and them to the prometheus group
+  user:
+    name: prometheus
+    group: prometheus
+    shell: /sbin/nologin
+    append: yes
+    comment: "Prometheus user"
+    state: present
+- name: Check if /etc/prometheus exists
+  stat:
+    path: /etc/prometheus
+  register: dir_prometheus_facts
+- name: create /etc/prometheus configuration directory
+  file:
+    path: /etc/prometheus
+    state: directory
+  when: not dir_prometheus_facts.stats.exists | default(false)
+- name: Check if /var/lib/prometheus exists
+  stat:
+    path: /var/lib/prometheus
+  register: dir_lib_facts
+- name: create /var/lib/prometheus configuration directory
+  file:
+    path: /var/lib/prometheus
+    state: directory
+  when: not dir_prometheus_facts.stats.exists | default(false)
+- name: donwload prometheus
+  shell: wget https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
+- name: extract prometheus
+  command: tar -xzvf prometheus-2.47.1.linux-amd64.tar.gz
+- name: move prometheus binary files
+  command: mv prometheus-2.47.1.linux-amd64/prometheus /usr/local/bin
+- name: move promtool binary files
+  command: mv prometheus-2.47.1.linux-amd64/promtool /usr/local/bin
+- name: set owner for prometheus binary files 
+  file:
+    path: /usr/local/bin/prometheus
+    owner: prometheus
+    group: prometheus
+- name: set owner for promtool binary files
+  file:
+    path: /usr/local/bin/promtool
+    owner: prometheus
+    group: prometheus
+- name: move consoles configuration files
+  command: mv prometheus-2.47.1.linux-amd64/consoles /etc/prometheus/
+- name: move console_libraries configuration files
+  command: mv prometheus-2.47.1.linux-amd64/console_libraries /etc/prometheus/
+- name: move console_libraries configuration files
+  command: mv prometheus-2.47.1.linux-amd64/prometheus.yml /etc/prometheus/
+- name: change ownership of /etc/prometheus directory
+  file:
+    path: /etc/prometheus
+    owner: prometheus
+    group: prometheus
+- name: change ownership of /etc/prometheus/consoles directory
+  file:
+    path: /etc/prometheus/consoles
+    owner: prometheus
+    group: prometheus
+- name: change ownership of /etc/prometheus/console_libraries directory
+  file:
+    path: /etc/prometheus/console_libraries
+    owner: prometheus
+    group: prometheus
+- name: change ownership of /etc/prometheus/prometheus.yml file
+  file:
+    path: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+- name: change ownership of /var/lib/prometheus directory
+  file:
+    path: /var/lib/prometheus
+    owner: prometheus
+    group: prometheus
+- name: create a prometheus service file
+  file:
+    path: /etc/systemd/system/prometheus.service
+    state: touch
+- name: add prometheus service configuration
+  lineinfile:
+    path: /etc/systemd/system/prometheus.service
+    line: |
+      [Unit]
+      Description=Prometheus
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      User=prometheus
+      Group=prometheus
+      Type=simple
+      ExecStart=/usr/local/bin/prometheus \
+          --config.file /etc/prometheus/prometheus.yml \
+          --storage.tsdb.path /var/lib/prometheus/ \
+          --web.console.templates=/etc/prometheus/consoles \
+          --web.console.libraries=/etc/prometheus/console_libraries
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: reload systemd
+- name: Copy prometheus config file
+  ansible.builtin.copy:
+    src: "files/prometheus.yaml"
+    dest: "/etc/prometheus/prometheus.yml"
+  notify: restart prometheus
+  tags: copy_config_file
+- name: start prometheus service
+  systemd:
+    name: prometheus
+    state: started
+- name: enable prometheus
+  command: systemctl enable prometheus
+- name: check prometheus status
+  command: systemctl status prometheus

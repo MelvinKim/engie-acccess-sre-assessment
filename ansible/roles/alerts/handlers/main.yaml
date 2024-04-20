@@ -1,0 +1,4 @@
+---
+# handlers file for alerts role
+- name: Restart Prometheus
+  command: sudo systemctl restart prometheus

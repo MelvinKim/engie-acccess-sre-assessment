@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-deployment"
+  labels:
+    app: "{{ .Release.Name }}-app"
+spec:
+  replicas: {{ .Values.apiserver.replicas }}
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-app"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-app"
+    spec:
+      {{- with .Values.apiserver.container }}
+      containers:
+      - image: "{{ .image.name }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.imagePullPolicy }}
+        name: {{ .name }}
+        resources:
+        {{- with .resources }}
+          requests:
+            cpu: {{ .requests.cpu }}
+            memory: {{ .requests.memory }}
+          limits:
+            cpu: {{ .limits.cpu }}
+            memory: {{ .limits.memory }}
+        {{- end }}
+        ports:
+        - name: hello-world
+          containerPort: 80
+      {{- end }}

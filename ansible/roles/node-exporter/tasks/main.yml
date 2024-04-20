@@ -1,0 +1,56 @@
+---
+# tasks file for node-exporter
+- name: update package repositories
+  apt:
+    update_cache: yes
+- name: create node_exporter group
+  group:
+    name: node_exporter
+    state: present
+- name: create node_exporter user and them to the node_exporter group
+  user:
+    name: node_exporter
+    group: node_exporter
+    shell: /sbin/nologin
+    append: yes
+    comment: "node_exporter user"
+    state: present
+- name: donwload node exporter
+  shell: wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+- name: extract node exporter
+  command: tar -xzvf node_exporter-1.6.1.linux-amd64.tar.gz
+- name: copy node exporter binary files
+  command: mv node_exporter-1.6.1.linux-amd64/node_exporter /usr/local/bin
+- name: set owner for node_exporter binary files 
+  file:
+    path: /usr/local/bin/node_exporter
+    owner: node_exporter
+    group: node_exporter
+- name: create a node_exporter service file
+  file:
+    path: /etc/systemd/system/node_exporter.service
+    state: touch
+- name: add node_exporter service configuration
+  lineinfile:
+    path: /etc/systemd/system/node_exporter.service
+    line: |
+      [Unit]
+      Description=Node Exporter Wants=network-online.target After=network-online.target
+
+      [Service]
+      User=node_exporter
+      Group=node_exporter
+      Type=simple
+      ExecStart=/usr/local/bin/node_exporter
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: reload systemd
+- name: enable node_exporter
+  command: systemctl enable node_exporter
+- name: start node_exporter service
+  systemd:
+    name: node_exporter
+    state: started
+- name: check node_exporter status
+  command: systemctl status node_exporter

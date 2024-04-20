@@ -1,0 +1,33 @@
+apiserver:
+  replicas: 1
+  container:
+    name: hello-world
+    image:
+      name: "melvinkimathi/hello-world"
+      tag: "latest"
+      imagePullPolicy: Always
+    resources:
+      requests:
+        cpu: 50m
+        memory: 50Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+    ports:
+    - containerPort: 80
+      name: hello-world
+    restartPolicy: Always
+
+service:
+  type: NodePort
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 80
+
+hpa:
+  minReplicas: 2
+  maxReplicas: 10
+  container: hello-world
+  metric: cpu
+  targetUtiliation: 60
