@@ -5,7 +5,7 @@ variable "application_ami" {
 
 variable "security_groups" {
     type = list(string)
-    default = ["sg-08a1bfc1051046b87"]
+    default = ["sg-0f46f20bc12ffab27"]
 }
 
 variable "alb_security_group_id" {
@@ -92,5 +92,9 @@ variable "vpc_zone_identifier" {
 }
 
 variable "code_deploy_role_name" {
+  type = string
+}
+
+variable "code_deploy_instance_profile_name" {
   type = string
 }

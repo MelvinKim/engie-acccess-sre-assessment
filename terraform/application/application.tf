@@ -1,30 +1,3 @@
-resource "aws_iam_role" "codedeploy-role" {
-  name = "codedeployrole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "ec2.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-  })
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
-  ]
-}
-
-resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
-  name = "codedeploy_instance_profile"
-  role = aws_iam_role.codedeploy-role.name
-
-  depends_on = [ aws_iam_role.codedeploy-role ]
-}
-
 resource "aws_launch_template" "application" {
     name                   = "sre_application"
     image_id               = "${var.application_ami}"
@@ -32,7 +5,6 @@ resource "aws_launch_template" "application" {
     instance_type          = "${var.instance_type}"
     vpc_security_group_ids = concat(var.security_groups, [var.alb_security_group_id])
 
-    depends_on = [ aws_iam_role.codedeploy-role ]
     tag_specifications {
         resource_type = "instance"
 
@@ -47,7 +19,7 @@ resource "aws_launch_template" "application" {
     user_data              = base64encode(templatefile("${path.module}/userdata.tmpl", {}))
 
     iam_instance_profile {
-        name = aws_iam_instance_profile.codedeploy_instance_profile.name
+        name = var.code_deploy_instance_profile_name
     }
 
     lifecycle {

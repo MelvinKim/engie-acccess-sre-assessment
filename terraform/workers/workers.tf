@@ -1,30 +1,3 @@
-resource "aws_iam_role" "codedeploy-role" {
-  name = "codedeployrole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "ec2.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-  })
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
-  ]
-}
-
-resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
-  name = "codedeploy_instance_profile"
-  role = aws_iam_role.codedeploy-role.name
-
-  depends_on = [ aws_iam_role.codedeploy-role ]
-}
-
 resource "aws_launch_template" "workers" {
     name                   = "workers_${var.name}"
     image_id               = var.workers_ami
@@ -43,7 +16,7 @@ resource "aws_launch_template" "workers" {
     }
 
     iam_instance_profile {
-        name = aws_iam_instance_profile.codedeploy_instance_profile.name
+        name = var.code_deploy_instance_profile_name
     }
 
     lifecycle {

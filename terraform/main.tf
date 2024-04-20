@@ -1,3 +1,30 @@
+resource "aws_iam_role" "codedeploy-role" {
+  name = "codedeployrole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+  })
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+  ]
+}
+
+resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
+  name = "codedeploy_instance_profile"
+  role = aws_iam_role.codedeploy-role.name
+
+  depends_on = [ aws_iam_role.codedeploy-role ]
+}
+
 module "payments_workers" {
     source     = "./workers"
     name       = "payments_workers"
@@ -8,6 +35,7 @@ module "payments_workers" {
     cpuscale = 60.0
 
     code_deploy_role_name = var.code_deploy_role_name
+    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 module "background_workers" {
@@ -19,6 +47,7 @@ module "background_workers" {
     cpuscale = 60.0
 
     code_deploy_role_name = var.code_deploy_role_name
+    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 module "messaging_background_workers" {
@@ -28,6 +57,7 @@ module "messaging_background_workers" {
     max_size   = 4
 
     code_deploy_role_name = var.code_deploy_role_name
+    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 resource "aws_sns_topic" "sre_challenge" {
@@ -96,6 +126,7 @@ module "application" {
     max_size   = 4
 
     code_deploy_role_name = var.code_deploy_role_name
+    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 resource "aws_security_group" "alb_security_group" {
