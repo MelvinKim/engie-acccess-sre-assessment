@@ -20,6 +20,7 @@
       ansible.builtin.copy:
         src: ~/playground/assessments/engie-acccess-sre-assessment/scripts/
         dest: /home/ubuntu/scripts
+        mode: u=rwx,g=rw,o=r
       tags:
         - lifecycle-scripts
     - name: Make sure Application Source Code Destination Directory Exists
@@ -29,7 +30,7 @@
         owner: ubuntu
     - name: Copy Application Source Code
       ansible.builtin.copy:
-        src: ~/playground/assessments/engie-acccess-sre-assessment/sre-challenge/
+        src: ~/playground/assessments/engie-acccess-sre-assessment/sre-challenge
         dest: /home/ubuntu/sre-challenge
     - name: Run Application Before Install Script
       ansible.builtin.script:

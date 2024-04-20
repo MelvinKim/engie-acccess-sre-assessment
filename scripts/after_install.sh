@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# change ownership of /var/www/html/django_project directory
+sudo chown -R ubuntu:ubuntu /var/www/html/django_project
+
 # Set working directory
 cd /var/www/html/django_project/sre_challenge
 
