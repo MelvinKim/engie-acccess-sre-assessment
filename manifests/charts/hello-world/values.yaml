@@ -3,8 +3,8 @@ apiserver:
   container:
     name: hello-world
     image:
-      name: "melvinkimathi/hello-world"
-      tag: "latest"
+      name: "melvinkimathi/engie-access-africa-sre-assessment"
+      tag: "1.0.0"
       imagePullPolicy: Always
     resources:
       requests:

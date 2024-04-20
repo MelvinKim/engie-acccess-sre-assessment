@@ -9,7 +9,7 @@ spec:
   metrics:
   - containerResource:
       container: {{ .container }}
-      name: {{ .cpu }}
+      name: {{ .metric }}
       target:
         averageUtilization: {{ .targetUtiliation }}
         type: Utilization

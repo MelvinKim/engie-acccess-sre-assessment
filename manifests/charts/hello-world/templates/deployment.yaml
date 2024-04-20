@@ -19,6 +19,9 @@ spec:
       - image: "{{ .image.name }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.imagePullPolicy }}
         name: {{ .name }}
+        volumeMounts:
+        - name: uwsgi-config
+          mountPath: /app/uwsgi.ini
         resources:
         {{- with .resources }}
           requests:
@@ -31,4 +34,8 @@ spec:
         ports:
         - name: hello-world
           containerPort: 80
+      volumes:
+      - name: uwsgi-config
+        configMap:
+          name: uwsgi-configmap
       {{- end }}
