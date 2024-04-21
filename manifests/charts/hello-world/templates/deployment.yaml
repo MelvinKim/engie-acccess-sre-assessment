@@ -16,41 +16,38 @@ spec:
     spec:
       imagePullSecrets:
         - name: pullsecret
-      {{- with .Values.apiserver.container }}
+      {{- with .Values.apiserver.containers }}
       containers:
-      - name: nginx-server
-        image: nginx
-        imagePullPolicy: Always
-        resources:
-          requests:
-            memory: 50Mi
-            cpu: 50m
-          limits:
-            memory: 100Mi
-            cpu: 100m
-        ports:
-          - name: http
-            containerPort: 80
-        volumeMounts:
-          - name: nginx-config
-            mountPath: etc/nginx/conf.d
-      - image: "{{ .image.name }}:{{ .image.tag }}"
-        imagePullPolicy: {{ .image.imagePullPolicy }}
-        name: {{ .name }}
-        resources:
-        {{- with .resources }}
-          requests:
-            cpu: {{ .requests.cpu }}
-            memory: {{ .requests.memory }}
-          limits:
-            cpu: {{ .limits.cpu }}
-            memory: {{ .limits.memory }}
+        {{- range .}}
+        - name: {{ .name }}
+          image: {{ .image }}
+          imagePullPolicy: {{ .imagePullPolicy }}
+          resources:
+            requests:
+              cpu: {{ .resources.requests.cpu }}
+              memory: {{ .resources.requests.memory }}
+            limits:
+              cpu: {{ .resources.limits.cpu }}
+              memory: {{ .resources.limits.memory }}
+          ports:
+            {{- range .ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+            {{- end }}
+          {{- if hasKey . "volumeMounts" }}
+          volumeMounts:
+            {{- range .volumeMounts}}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+            {{- end }}
+          {{- end }}
         {{- end }}
-        ports:
-        - name: hello-world
-          containerPort: 5000
+      {{- end }}
+      {{- with .Values.apiserver.volumes}}
       volumes:
-      - name: nginx-config
-        configMap:
-          name: nginx-config
+        {{- range . }}
+        - name: {{ .name }}
+          configMap:
+            name: {{ .configMap.name }}
+        {{- end }}
       {{- end }}
