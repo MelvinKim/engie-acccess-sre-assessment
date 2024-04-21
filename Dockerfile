@@ -1,9 +1,9 @@
 # base image
 FROM python:3.11 AS base
 
-
-# Install C compiler needed to install uwsgi
-RUN apt-get install gcc
+# Install C compiler and other needed packages for uwsgi
+RUN apt-get update && \
+    apt-get install -y gcc python3-dev uwsgi uwsgi-plugin-python3
 
 # set working directory
 WORKDIR /app
@@ -11,7 +11,7 @@ WORKDIR /app
 # Copy source code
 COPY sre-challenge/ .
 # Allows docker to cache installed dependencies between builds
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # FROM python:3.11-alpine
 

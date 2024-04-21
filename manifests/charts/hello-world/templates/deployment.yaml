@@ -14,14 +14,29 @@ spec:
       labels:
         app: "{{ .Release.Name }}-app"
     spec:
+      imagePullSecrets:
+        - name: pullsecret
       {{- with .Values.apiserver.container }}
       containers:
+      - name: nginx-server
+        image: nginx
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: 50Mi
+            cpu: 50m
+          limits:
+            memory: 100Mi
+            cpu: 100m
+        ports:
+          - name: http
+            containerPort: 80
+        volumeMounts:
+          - name: nginx-config
+            mountPath: etc/nginx/conf.d
       - image: "{{ .image.name }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.imagePullPolicy }}
         name: {{ .name }}
-        volumeMounts:
-        - name: uwsgi-config
-          mountPath: /app/uwsgi.ini
         resources:
         {{- with .resources }}
           requests:
@@ -33,9 +48,9 @@ spec:
         {{- end }}
         ports:
         - name: hello-world
-          containerPort: 80
+          containerPort: 5000
       volumes:
-      - name: uwsgi-config
+      - name: nginx-config
         configMap:
-          name: uwsgi-configmap
+          name: nginx-config
       {{- end }}

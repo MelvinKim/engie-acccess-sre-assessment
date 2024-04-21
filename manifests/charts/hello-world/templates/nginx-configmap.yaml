@@ -1,7 +1,39 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: myconfig
-  namespace: default
+  name: nginx-config
 data:
-  key: value
+  default.conf: |
+    upstream app_server {
+      server localhost:5000;
+    }
+    
+    server {
+      # port on which nginx will listen for traffic, then forward to upstream (5000)
+      listen 80;
+    
+      # Set the server name (replace with your domain name)
+      #server_name your_domain.com;
+      server_name _;
+    
+      # Define locations for static and media files
+      location /static/ {
+        alias /var/www/html/django_project/sre_challenge/static/;
+      }
+    
+      location /media/ {
+        alias /var/www/html/django_project/sre_challenge/media/;
+      }
+    
+      # Location for passing requests to uWSGI
+      location / {
+        include uwsgi_params;
+        proxy_pass http://app_server;
+        proxy_set_header Host $http_host;
+      }
+    
+      # Additional security headers (optional)
+      add_header X-Frame-Options "SAMEORIGIN";
+      add_header X-XSS-Protection "1; mode=block";
+      add_header X-Content-Type-Options "nosniff";
+    }
