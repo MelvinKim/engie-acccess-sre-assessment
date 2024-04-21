@@ -5,3 +5,5 @@ notes.txt
 terraform/remote-backend/.terraform
 *.terraform
 venv
+
+terraform.tfvars
