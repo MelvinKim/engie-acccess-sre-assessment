@@ -10,14 +10,14 @@ WORKDIR /app
 
 # Copy source code
 COPY sre-challenge/ .
-# Allows docker to cache installed dependencies between builds
+
+# Installed required dependencies
 RUN pip install -r requirements.txt
-
-# FROM python:3.11-alpine
-
-# COPY --from=base /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
 EXPOSE 80
 
-RUN chmod 755 start.sh
+# make the script executable
+RUN chmod +x start.sh
+
+# Entrypoint that will run when the container starts
 CMD ["./start.sh"]
