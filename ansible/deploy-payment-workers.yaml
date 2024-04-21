@@ -1,0 +1,5 @@
+- name: Deploy Application
+  hosts: ASG_workers_payments_workers
+  gather_facts: false
+  roles:
+  - hello-world

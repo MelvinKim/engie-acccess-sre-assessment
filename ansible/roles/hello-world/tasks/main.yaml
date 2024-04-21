@@ -6,7 +6,7 @@
     owner: ubuntu
 - name: Copy Nginx and uWSGI Config files
   ansible.builtin.copy:
-    src: ~/playground/assessments/engie-acccess-sre-assessment/config/
+    src: config/
     dest: /home/ubuntu/config
 - name: Make sure Application Scripts Destination Directory Exists
   ansible.builtin.file:
@@ -15,11 +15,11 @@
     owner: ubuntu
 - name: Copy Application Lifecycle Scripts
   ansible.builtin.copy:
-    src: ~/playground/assessments/engie-acccess-sre-assessment/scripts/
+    src: scripts/
     dest: /home/ubuntu/scripts
     mode: u=rwx,g=rw,o=r
   tags:
-    - lifecycle-scripts
+    - lifecycle_scripts
 - name: Make sure Application Source Code Destination Directory Exists
   ansible.builtin.file:
     path: /home/ubuntu/sre-challenge
@@ -27,7 +27,7 @@
     owner: ubuntu
 - name: Copy Application Source Code
   ansible.builtin.copy:
-    src: ~/playground/assessments/engie-acccess-sre-assessment/sre-challenge
+    src: sre-challenge/
     dest: /home/ubuntu/sre-challenge
 - name: Run Application Before Install Script
   ansible.builtin.script:
@@ -42,4 +42,4 @@
   ansible.builtin.script:
     cmd: /home/ubuntu/sre-challenge/application_stop.sh
   tags:
-    - stop-app
+    - stop_app

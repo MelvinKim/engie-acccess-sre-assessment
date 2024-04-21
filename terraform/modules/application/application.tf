@@ -10,17 +10,13 @@ resource "aws_launch_template" "application" {
 
         tags = merge(            
             {
-                Name = "sre_application"
+                Name = "sre_assessment_application"
             },
             var.extra_tags,
             )
     }
   
     user_data              = base64encode(templatefile("${path.module}/userdata.tmpl", {}))
-
-    iam_instance_profile {
-        name = var.code_deploy_instance_profile_name
-    }
 
     lifecycle {
         create_before_destroy =  true

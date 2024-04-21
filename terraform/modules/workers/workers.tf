@@ -9,14 +9,10 @@ resource "aws_launch_template" "workers" {
 
         tags = merge(
             {
-                Name = "workers_${var.name}"
+                Name = "sre_assessment_workers_${var.name}"
             },
             var.extra_tags,
             )
-    }
-
-    iam_instance_profile {
-        name = var.code_deploy_instance_profile_name
     }
 
     lifecycle {

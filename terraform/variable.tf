@@ -21,7 +21,7 @@ variable "public_subnet_ids" {
 variable "key_name" {
   type = string
   description = "AWS key pair name"
-  default = "sre-challenge"
+  default = "sre_application"
 }
 
 variable "code_deploy_role_name" {

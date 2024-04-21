@@ -7,5 +7,10 @@ keyed_groups:
     separator: "ec2_"
   - key: tags.Name
     prefix: "sre_application"
+  - key: tags['aws:autoscaling:groupName']
+    prefix: ""
+    separator: "ASG_"
 filters:
   instance-state-name: running
+  tag:Owner:
+    - "software"

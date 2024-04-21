@@ -5,7 +5,7 @@ variable "application_ami" {
 
 variable "security_groups" {
     type = list(string)
-    default = ["sg-0f46f20bc12ffab27"]
+    default = ["sg-08ab8d901cf98891b"]
 }
 
 variable "alb_security_group_id" {
@@ -83,7 +83,7 @@ variable "ebs_volume_type" {
 variable "key_name" {
   type = string
   description = "AWS key pair name"
-  default = "sre-challenge"
+  default = "sre_application"
 }
 
 variable "vpc_zone_identifier" {
@@ -91,10 +91,10 @@ variable "vpc_zone_identifier" {
   default = [ "subnet-0da8d7c55226a2660", "subnet-0de45207614223287", "subnet-0638ee5205836319e", "subnet-0c2d9e0f419303060" ]
 }
 
-variable "code_deploy_role_name" {
-  type = string
-}
+# variable "code_deploy_role_name" {
+#   type = string
+# }
 
-variable "code_deploy_instance_profile_name" {
-  type = string
-}
+# variable "code_deploy_instance_profile_name" {
+#   type = string
+# }

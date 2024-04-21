@@ -1,0 +1,6 @@
+dependencies:
+- name: common-config
+  repository: file://../common-configs
+  version: 0.1.0
+digest: sha256:d01db6ecdfd7c2593cd1d210b83985cb19c295da14ae6061901f1a47f6943dd9
+generated: "2024-04-22T00:05:16.369093+03:00"

@@ -1,68 +1,27 @@
-# resource "aws_iam_role" "codedeploy-role" {
-#   name = "codedeployrole"
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#         {
-#             "Effect": "Allow",
-#             "Principal": {
-#                 "Service": "codedeploy.amazonaws.com"
-#             },
-#             "Action": "sts:AssumeRole"
-#         }
-#     ]
-#   })
-# }
-
-# resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
-#   role = aws_iam_role.codedeploy-role.id
-#   policy_arn = "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
-# }
-
-# resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
-#   name = "codedeploy_instance_profile"
-#   role = aws_iam_role.codedeploy-role.name
-
-#   depends_on = [ aws_iam_role.codedeploy-role ]
-# }
-
 module "payments_workers" {
-    source     = "./workers"
+    source     = "./modules/workers"
     name       = "payments_workers"
     min_size   = 2
     desired_capacity = 2
     max_size   = 2
     instance_type = "t3.nano"
     cpuscale = 60.0
-
-    code_deploy_role_name = var.code_deploy_role_name
-    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 module "background_workers" {
-    source     = "./workers"
+    source     = "./modules/workers"
     name       = "background_workers"
     min_size   = 2
     desired_capacity = 2
     max_size   = 2
     cpuscale = 60.0
-
-    code_deploy_role_name = var.code_deploy_role_name
-    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 module "messaging_background_workers" {
-    source     = "./workers"
+    source     = "./modules/workers"
     name       = "messaging_background_workers"
     min_size   = 1
     max_size   = 4
-
-    code_deploy_role_name = var.code_deploy_role_name
-    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
-}
-
-resource "aws_sns_topic" "sre_challenge" {
-  name = "sre-challenge-topic"
 }
 
 resource "aws_autoscaling_schedule" "daily_messaging_scale_out" {
@@ -101,34 +60,14 @@ resource "aws_autoscaling_schedule" "evening_payments_scale_in" {
     autoscaling_group_name = "${module.payments_workers.scaling_group_id}"
 }
 
-resource "aws_codedeploy_app" "sre-terraform-app" {
-    name                  = "sre-terraform-app"
-}
-
-resource "aws_codedeploy_deployment_group" "workers-deployment_grp" {
-    app_name              = "sre-terraform-app"
-    deployment_group_name = "workers"
-    service_role_arn      = "arn:aws:iam::053769797169:role/codedeployrole"
-    deployment_config_name= "CodeDeployDefault.AllAtOnce"
-
-    autoscaling_groups    = ["${module.background_workers.scaling_group_id}",
-                             "${module.messaging_background_workers.scaling_group_id}",
-                             "${module.payments_workers.scaling_group_id}"
-                             ]
-}
-
-
 ## Application servers
 module "application" {
-    source     = "./application"
+    source     = "./modules/application"
     alb_security_group_id = aws_security_group.alb_security_group.id
     target_group_arn = aws_lb_target_group.application.arn
 
     min_size   = 2
     max_size   = 4
-
-    code_deploy_role_name = var.code_deploy_role_name
-    code_deploy_instance_profile_name = aws_iam_instance_profile.codedeploy_instance_profile.name
 }
 
 resource "aws_security_group" "alb_security_group" {
@@ -151,6 +90,22 @@ resource "aws_security_group" "alb_security_group" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+    // Inbound rule for node node-exporter (used to export host metrics)
+    ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # For production use-cases, limit access to only prometheus servers
+    }
+
+    // Inbound rule for node node-exporter (used to export host metrics)
+    ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # For production use-cases, limit access to only prometheus servers
+    }
 
   // Outbound rule: Allow all traffic to go out
   egress {
@@ -254,5 +209,44 @@ resource "aws_lb_listener_rule" "application" {
 
 #     autoscaling_groups    = ["${module.application.scaling_group_id}",
 #                             ]
+# }
+
+# resource "aws_iam_role" "codedeploy-role" {
+#   name = "codedeployrole"
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#         {
+#             "Effect": "Allow",
+#             "Principal": {
+#                 "Service": "codedeploy.amazonaws.com"
+#             },
+#             "Action": "sts:AssumeRole"
+#         }
+#     ]
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
+#   role = aws_iam_role.codedeploy-role.id
+#   policy_arn = "arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess"
+# }
+
+# resource "aws_iam_instance_profile" "codedeploy_instance_profile" {
+#   name = "codedeploy_instance_profile"
+#   role = aws_iam_role.codedeploy-role.name
+
+#   depends_on = [ aws_iam_role.codedeploy-role ]
+# }
+
+# How to create a unique key pair for each host
+# resource "tls_private_key" "sre-challenge" {
+#   algorithm = "RSA"
+#   rsa_bits = 4096
+# }
+
+# resource "aws_key_pair" "sre-challenge" {
+#   key_name = var.key_name
+#   public_key = tls_private_key.sre-challenge.public_key_openssh
 # }
 

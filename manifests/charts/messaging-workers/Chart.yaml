@@ -1,0 +1,11 @@
+apiVersion: v2
+name: api-server
+version: "0.1.0"
+appVersion: "1.0.0"
+type: application
+description: A Helm chart for Messaging Workers 1.0
+# define chart dependencies
+dependencies:
+  - name: common-config
+    version: "0.1.0"
+    repository: "file://../common-configs"

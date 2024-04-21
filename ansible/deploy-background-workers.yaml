@@ -1,5 +1,5 @@
 - name: Deploy Application
-  hosts: ec2_sre_application
+  hosts: ASG_workers_background_workers
   gather_facts: false
   roles:
   - hello-world
