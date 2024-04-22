@@ -1,0 +1,7 @@
+- name: Deploy Application
+  hosts: ASG_application
+  gather_facts: false
+  become: true
+  roles:
+  - alertmanager
+  - alerts

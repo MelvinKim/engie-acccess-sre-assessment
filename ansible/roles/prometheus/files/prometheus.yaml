@@ -8,7 +8,7 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - "<alert-manager-instance-ip>:9093"
+          - "54.245.4.116:9093"
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
@@ -17,12 +17,8 @@ rule_files:
 scrape_configs:
   - job_name: "prometheus"
     static_configs:
-      - targets: ["<prometheus-instance-ip>:9090"] # set Prometheus Instance IP
+      - targets: ["54.245.4.116:9090"] # set Prometheus Instance IP
 
   - job_name: "node-exporter"
-    ec2_sd_configs:
-      - region: eu-central-1
-        port: 9100
-    relabel_configs:
-      - source_labels: [__meta_ec2_private_ip]
-        target_label: private_ip
+    static_configs:
+      - targets: ['localhost:9100']

@@ -108,6 +108,14 @@ resource "aws_security_group" "alb_security_group" {
     cidr_blocks = ["0.0.0.0/0"] # For production use-cases, limit access to only prometheus servers
     }
 
+    // Inbound rule for Grafana
+    ingress {
+      from_port = 3000
+      to_port = 3000
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+
   // Outbound rule: Allow all traffic to go out
   egress {
     from_port   = 0

@@ -1,0 +1,59 @@
+- name: update package repositories
+  apt:
+    update_cache: yes
+- name: donwload alertmanager
+  shell: wget https://github.com/prometheus/alertmanager/releases/download/v0.22.2/alertmanager-0.22.2.linux-amd64.tar.gz
+- name: extract alertmanager
+  command: tar -xzvf alertmanager-0.22.2.linux-amd64.tar.gz
+- name: move alertmanager to /opt/alertmanager directory
+  command: sudo mv alertmanager-0.22.2.linux-amd64 /opt/alertmanager
+  tags:
+    - move-alertmanager
+- name: change ownership of /opt/alertmanager directory
+  command: chown -Rfv root:root /opt/alertmanager
+- name: create alertmanager data directory
+  command: mkdir -v /opt/alertmanager/data
+- name: create prometheus group
+  group:
+    name: prometheus
+    state: present
+  tags:
+    - create-prometheus-group
+- name: create prometheus user
+  user:
+    name: prometheus
+    group: prometheus
+    shell: /sbin/nologin
+    append: yes
+    comment: "Prometheus user"
+    state: present
+- name: change ownership of /opt/alertmanager/data directory
+  command: sudo chown -R prometheus:prometheus /opt/alertmanager/data
+- name: create alertmanager service file
+  file:
+    path: /etc/systemd/system/alertmanager.service
+    state: touch
+- name: add alertmanager service configuration
+  lineinfile:
+    path: /etc/systemd/system/alertmanager.service
+    line: |
+      [Unit]
+      Description=Alertmanager for prometheus
+
+      [Service]
+      Restart=always
+      User=prometheus
+      ExecStart=/opt/alertmanager/alertmanager --config.file=/opt/alertmanager/alertmanager.yml --storage.path=/opt/alertmanager/data            
+      ExecReload=/bin/kill -HUP $MAINPID
+      TimeoutStopSec=20s
+      SendSIGKILL=no
+
+      [Install]
+      WantedBy=multi-user.target
+  notify: reload systemd
+- name: start alertmanager service
+  command: systemctl start alertmanager.service
+- name: start alertmanager service
+  command: systemctl enable alertmanager.service
+- name: check alertmanager status
+  command: systemctl status alertmanager.service

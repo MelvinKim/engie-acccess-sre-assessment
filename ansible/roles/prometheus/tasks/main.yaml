@@ -110,7 +110,7 @@
   notify: reload systemd
 - name: Copy prometheus config file
   ansible.builtin.copy:
-    src: "files/prometheus.yaml"
+    src: prometheus.yaml
     dest: "/etc/prometheus/prometheus.yml"
   notify: restart prometheus
   tags: copy_config_file
@@ -118,7 +118,11 @@
   systemd:
     name: prometheus
     state: started
+  tags:
+    - start-prometheus
 - name: enable prometheus
   command: systemctl enable prometheus
+  tags:
+    - enable-prometheus
 - name: check prometheus status
   command: systemctl status prometheus
