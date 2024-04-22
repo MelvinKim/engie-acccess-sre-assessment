@@ -15,14 +15,14 @@
   command: chmod -c -R ug=rwx /home/ubuntu/sre-challenge/scripts
 - name: Run Application Before Install Script
   become: true
-  shell: sh /home/ubuntu/sre-challenge/scripts/before_install.sh
+  shell: /home/ubuntu/sre-challenge/scripts/before_install.sh
   tags:
     - before-install
 - name: Run Application After Install Script
-  shell: sh /home/ubuntu/sre-challenge/scripts/after_install.sh
+  shell: /home/ubuntu/sre-challenge/scripts/after_install.sh
 - name: Run Application Start Script
-  shell: sh /home/ubuntu/sre-challenge/scripts/application_start.sh
+  shell: /home/ubuntu/sre-challenge/scripts/application_start.sh
 - name: Run Application Stop Script
-  shell: sh /home/ubuntu/sre-challenge/scripts/application_stop.sh
+  shell: /home/ubuntu/sre-challenge/scripts/application_stop.sh
   tags:
     - stop_app
