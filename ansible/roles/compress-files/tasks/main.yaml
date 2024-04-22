@@ -1,0 +1,4 @@
+- name: Compress file before copyying to remote host
+  shell: |
+    cd /Users/karutikimathi/playground/assessments/engie-acccess-sre-assessment
+    tar zcf sre-assessment.tar.gz sre-challenge

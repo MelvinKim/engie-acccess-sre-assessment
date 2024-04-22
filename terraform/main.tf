@@ -66,8 +66,9 @@ module "application" {
     alb_security_group_id = aws_security_group.alb_security_group.id
     target_group_arn = aws_lb_target_group.application.arn
 
-    min_size   = 2
-    max_size   = 4
+    min_size   = 1 # 2
+    max_size   = 1 # 4
+    desired_capacity = 1
 }
 
 resource "aws_security_group" "alb_security_group" {

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Start webserver
-cd /var/www/html/django_project/sre_challenge
-sudo /var/www/html/django_project/sre_challenge/.venv/bin/uwsgi --socket /var/run/uwsgi/app/socket --module sre_challenge.wsgi:application --daemonize /var/log/uwsgi/sre-challenge.log
+cd /var/www/html/django_project
+sudo /var/www/html/django_project/.venv/bin/uwsgi --socket /var/run/uwsgi/app/socket --module sre_challenge.wsgi:application --daemonize /var/log/uwsgi/sre-challenge.log
 
-# Start reverse proxy
+# restart reverse proxy
 sudo systemctl start nginx.service

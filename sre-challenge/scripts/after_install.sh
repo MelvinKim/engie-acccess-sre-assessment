@@ -1,13 +1,10 @@
 #!/bin/bash
 
-# change ownership of /var/www/html/django_project directory
-sudo chown -R ubuntu:ubuntu /var/www/html/django_project
-
 # Set working directory
-cd /var/www/html/django_project/sre_challenge
+cd /var/www/html/django_project
 
 # set up virtualenv
-/usr/bin/python3 -m venv .venv
+sudo /usr/bin/python3 -m venv .venv
 source .venv/bin/activate
 
 # Install python requirements
@@ -15,3 +12,5 @@ pip install -r requirements.txt
 
 # Link Nginx configuration file
 sudo ln -sf /var/www/html/django_project/config/nginx.conf /etc/nginx/nginx.conf
+
+# sudo ln -sf /var/www/html/django_project/sre_challenge/ /etc/nginx/nginx.conf

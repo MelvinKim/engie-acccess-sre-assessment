@@ -1,10 +1,18 @@
 - name: Copy Application Source Code, Scripts and Configs
   become: true
   ansible.builtin.unarchive:
-    src: /Users/karutikimathi/playground/assessments/engie-acccess-sre-assessment/sre-challenge.tar.gz
+    src: /Users/karutikimathi/playground/assessments/engie-acccess-sre-assessment/sre-assessment.tar.gz
     dest: /home/ubuntu
   tags:
     - uncompress
+- name: Recursively change ownership to avoid permission errors
+  file:
+    path: /home/ubuntu/sre-challenge
+    recurse: yes
+    owner: ubuntu
+    group: root
+- name: Make Scripts Executable
+  command: chmod -c -R ug=rwx /home/ubuntu/sre-challenge/scripts
 - name: Run Application Before Install Script
   become: true
   shell: sh /home/ubuntu/sre-challenge/scripts/before_install.sh

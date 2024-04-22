@@ -1,28 +1,28 @@
 #!/bin/bash
 
 # Update package list
-apt-get update
+sudo apt-get update
 
 # install C complier in Ubuntu, if absent uwsgi installation fails
-sudo apt-get install gcc
+sudo apt-get -y install gcc
 
 # Install nginx
-apt-get install -y nginx
+sudo apt-get install -y nginx
 
 # Install Python3 virtualenv
-apt-get install -y python3-venv
+sudo apt-get install -y python3-venv
 
 # Install Python development package
-apt-get install -y python3-dev
+sudo apt-get install -y python3-dev
 
 # Install uwsgi
-apt-get install -y uwsgi uwsgi-plugin-python3
+sudo apt-get install -y uwsgi uwsgi-plugin-python3
 
 # Create directory /var/log/uwsgi
 mkdir -p /var/log/uwsgi
 
 # Change permissions to read/write for /var/log/uwsgi
-chmod -R 777 /var/log/uwsgi
+sudo chmod -R 777 /var/log/uwsgi
 
 ## Install aws codedeploy agent
 apt install ruby-full wget -y

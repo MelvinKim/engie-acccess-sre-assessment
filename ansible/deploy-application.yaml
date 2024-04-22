@@ -1,3 +1,10 @@
+- name: Compress large files
+  hosts: localhost
+  gather_facts: false
+  become: true
+  roles:
+  - compress-files
+
 - name: Deploy Application
   hosts: ASG_application
   gather_facts: false
