@@ -1,64 +1,64 @@
-module "payments_workers" {
-    source     = "./modules/workers"
-    name       = "payments_workers"
-    min_size   = 2
-    desired_capacity = 2
-    max_size   = 2
-    instance_type = "t3.nano"
-    cpuscale = 60.0
-}
+# module "payments_workers" {
+#     source     = "./modules/workers"
+#     name       = "payments_workers"
+#     min_size   = 2
+#     desired_capacity = 2
+#     max_size   = 2
+#     instance_type = "t3.nano"
+#     cpuscale = 60.0
+# }
 
-module "background_workers" {
-    source     = "./modules/workers"
-    name       = "background_workers"
-    min_size   = 2
-    desired_capacity = 2
-    max_size   = 2
-    cpuscale = 60.0
-}
+# module "background_workers" {
+#     source     = "./modules/workers"
+#     name       = "background_workers"
+#     min_size   = 2
+#     desired_capacity = 2
+#     max_size   = 2
+#     cpuscale = 60.0
+# }
 
-module "messaging_background_workers" {
-    source     = "./modules/workers"
-    name       = "messaging_background_workers"
-    min_size   = 1
-    max_size   = 4
-}
+# module "messaging_background_workers" {
+#     source     = "./modules/workers"
+#     name       = "messaging_background_workers"
+#     min_size   = 1
+#     max_size   = 4
+# }
 
-resource "aws_autoscaling_schedule" "daily_messaging_scale_out" {
-    scheduled_action_name  = "evening_payments_scale_out"
-    min_size               = 1
-    max_size               = 4
-    desired_capacity       = -1
-    recurrence             = "0 5 * * *"
-    autoscaling_group_name = "${module.messaging_background_workers.scaling_group_id}"
-}
+# resource "aws_autoscaling_schedule" "daily_messaging_scale_out" {
+#     scheduled_action_name  = "evening_payments_scale_out"
+#     min_size               = 1
+#     max_size               = 4
+#     desired_capacity       = -1
+#     recurrence             = "0 5 * * *"
+#     autoscaling_group_name = "${module.messaging_background_workers.scaling_group_id}"
+# }
 
-resource "aws_autoscaling_schedule" "daily_messaging_scale_in" {
-    scheduled_action_name  = "daily_messaging_scale_in"
-    min_size               = 0
-    max_size               = 4
-    desired_capacity       = -1
-    recurrence             = "0 22 * * *"
-    autoscaling_group_name = "${module.messaging_background_workers.scaling_group_id}"
-}
+# resource "aws_autoscaling_schedule" "daily_messaging_scale_in" {
+#     scheduled_action_name  = "daily_messaging_scale_in"
+#     min_size               = 0
+#     max_size               = 4
+#     desired_capacity       = -1
+#     recurrence             = "0 22 * * *"
+#     autoscaling_group_name = "${module.messaging_background_workers.scaling_group_id}"
+# }
 
-resource "aws_autoscaling_schedule" "evening_payments_scale_out" {
-    scheduled_action_name  = "evening_payments_scale_out"
-    min_size               = 4
-    max_size               = 8
-    desired_capacity       = -1
-    recurrence             = "0 15 * * *"
-    autoscaling_group_name = "${module.payments_workers.scaling_group_id}"
-}
+# resource "aws_autoscaling_schedule" "evening_payments_scale_out" {
+#     scheduled_action_name  = "evening_payments_scale_out"
+#     min_size               = 4
+#     max_size               = 8
+#     desired_capacity       = -1
+#     recurrence             = "0 15 * * *"
+#     autoscaling_group_name = "${module.payments_workers.scaling_group_id}"
+# }
 
-resource "aws_autoscaling_schedule" "evening_payments_scale_in" {
-    scheduled_action_name  = "evening_payments_scale_in"
-    min_size               = 2
-    max_size               = 8
-    desired_capacity       = -1
-    recurrence             = "0 18 * * *"
-    autoscaling_group_name = "${module.payments_workers.scaling_group_id}"
-}
+# resource "aws_autoscaling_schedule" "evening_payments_scale_in" {
+#     scheduled_action_name  = "evening_payments_scale_in"
+#     min_size               = 2
+#     max_size               = 8
+#     desired_capacity       = -1
+#     recurrence             = "0 18 * * *"
+#     autoscaling_group_name = "${module.payments_workers.scaling_group_id}"
+# }
 
 ## Application servers
 module "application" {

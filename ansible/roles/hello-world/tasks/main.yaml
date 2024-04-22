@@ -1,45 +1,20 @@
-
-- name: Make sure Nginx and uWSGI Config Destination Directory Exists
-  ansible.builtin.file:
-    path: /home/ubuntu/config
-    state: directory
-    owner: ubuntu
-- name: Copy Nginx and uWSGI Config files
-  ansible.builtin.copy:
-    src: config/
-    dest: /home/ubuntu/config
-- name: Make sure Application Scripts Destination Directory Exists
-  ansible.builtin.file:
-    path: /home/ubuntu/scripts
-    state: directory
-    owner: ubuntu
-- name: Copy Application Lifecycle Scripts
-  ansible.builtin.copy:
-    src: scripts/
-    dest: /home/ubuntu/scripts
-    mode: u=rwx,g=rw,o=r
+- name: Copy Application Source Code, Scripts and Configs
+  become: true
+  ansible.builtin.unarchive:
+    src: /Users/karutikimathi/playground/assessments/engie-acccess-sre-assessment/sre-challenge.tar.gz
+    dest: /home/ubuntu
   tags:
-    - lifecycle_scripts
-- name: Make sure Application Source Code Destination Directory Exists
-  ansible.builtin.file:
-    path: /home/ubuntu/sre-challenge
-    state: directory
-    owner: ubuntu
-- name: Copy Application Source Code
-  ansible.builtin.copy:
-    src: sre-challenge/
-    dest: /home/ubuntu/sre-challenge
+    - uncompress
 - name: Run Application Before Install Script
-  ansible.builtin.script:
-    cmd: /home/ubuntu/sre-challenge/before_install.sh
+  become: true
+  shell: sh /home/ubuntu/sre-challenge/scripts/before_install.sh
+  tags:
+    - before-install
 - name: Run Application After Install Script
-  ansible.builtin.script:
-    cmd: /home/ubuntu/sre-challenge/after_install.sh
+  shell: sh /home/ubuntu/sre-challenge/scripts/after_install.sh
 - name: Run Application Start Script
-  ansible.builtin.script:
-    cmd: /home/ubuntu/sre-challenge/application_start.sh
+  shell: sh /home/ubuntu/sre-challenge/scripts/application_start.sh
 - name: Run Application Stop Script
-  ansible.builtin.script:
-    cmd: /home/ubuntu/sre-challenge/application_stop.sh
+  shell: sh /home/ubuntu/sre-challenge/scripts/application_stop.sh
   tags:
     - stop_app
