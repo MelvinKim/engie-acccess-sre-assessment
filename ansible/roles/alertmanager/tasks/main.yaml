@@ -51,6 +51,10 @@
       [Install]
       WantedBy=multi-user.target
   notify: reload systemd
+- name: Copy alertmanager config file
+  ansible.builtin.copy:
+    src: alertmanager.yaml
+    dest: /etc/alertmanager.yaml
 - name: start alertmanager service
   command: systemctl start alertmanager.service
 - name: start alertmanager service

@@ -1,0 +1,36 @@
+# https://samber.github.io/awesome-prometheus-alerts/rules.html#kubernetes
+
+groups:
+- name: KubeDeployments
+  rules:
+    - alert: KubernetesDeploymentReplicasMismatch
+      expr: kube_deployment_spec_replicas != kube_deployment_status_replicas_available
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: Kubernetes Deployment replicas mismatch- Desired vs Available
+        description: |
+          Deployment {{ $labels.namespace }}/{{ $labels.deployment }} replicas mismatch
+
+          VALUE = {{ $value }}
+
+          COUNTRY: {{ $labels.country }}
+          ENVIRONMENT: {{ $labels.environment }}
+          NAMESPACE: {{ $labels.namespace }}
+
+    - alert: KubernetesDeploymentGenerationMismatch
+      expr: kube_deployment_status_observed_generation != kube_deployment_metadata_generation
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        summary: Kubernetes Deployment generation mismatch
+        description: |
+          Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has failed but has not been rolled back.
+
+          VALUE = {{ $value }}
+
+          COUNTRY: {{ $labels.country }}
+          ENVIRONMENT: {{ $labels.environment }}
+          NAMESPACE: {{ $labels.namespace }}

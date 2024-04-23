@@ -1,0 +1,17 @@
+route:
+  receiver: 'Mail Alert' # group_by: [ alertname ]
+  repeat_interval: 30s # how long to wait before resending notification for the same alert: if alert hasn’t been fixed.
+  group_wait: 15s # how long AlertManager will wait to buffer(group) alerts in the same group before initial notification
+  group_interval: 15s # how long AlertManager will wait before sending an alert that has been added to a group, to which a notification has already been set.
+
+receivers:
+  - name: 'Mail Alert'
+    email_configs:
+      - smarthost: 'smtp.gmail.com:587'
+        auth_username: '<your email id here>'
+        auth_password: "<your app password here>"
+        from: '<your email id here>'
+        to: '<receivers email id here>'
+        headers:
+          subject: 'Prod System Alerts'
+        send_resolved: true # notify about resolved alerts.
