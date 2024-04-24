@@ -25,7 +25,7 @@ data:
         alias /var/www/html/django_project/sre_challenge/media/;
       }
     
-      # Location for passing requests to uWSGI
+      # Location for passing non-media requests to uWSGI
       location / {
         include uwsgi_params;
         proxy_pass http://app_server;
