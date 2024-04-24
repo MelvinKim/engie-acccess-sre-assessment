@@ -8,16 +8,16 @@ apiserver:
       enabled: true
       path: /
       port: 80
-      initialDelaySeconds: 6
-      periodSeconds: 60
+      initialDelaySeconds: 0
+      periodSeconds: 30
       failureThreshold: 3
       successThreshold: 1
     readinessProbe: # check if pod is ready to start to accepting traffic
       enabled: true
       path: /
       port: 80
-      initialDelaySeconds: 3
-      periodSeconds: 60
+      initialDelaySeconds: 0
+      periodSeconds: 30
       failureThreshold: 3
       successThreshold: 1
     resources:
@@ -40,16 +40,16 @@ apiserver:
       enabled: true
       path: /
       port: 5000
-      initialDelaySeconds: 3
-      periodSeconds: 60
-      failureThreshold:
+      initialDelaySeconds: 0
+      periodSeconds: 30
+      failureThreshold: 3
       successThreshold: 1
     readinessProbe:
       enabled: true
       path: /
       port: 5000
-      initialDelaySeconds: 3
-      periodSeconds: 60
+      initialDelaySeconds: 0
+      periodSeconds: 30
       failureThreshold: 3
       successThreshold: 1
     resources:

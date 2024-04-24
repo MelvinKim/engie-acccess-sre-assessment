@@ -32,6 +32,8 @@ spec:
               port: {{ .port }}
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
+            failureThreshold: {{ .failureThreshold }}
+            successThreshold: {{ .successThreshold }}
           {{- end }}
           {{- end }}
           {{- if .readinessProbe.enabled }}
@@ -44,6 +46,8 @@ spec:
               port: {{ .port }}
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
+            failureThreshold: {{ .failureThreshold }}
+            successThreshold: {{ .successThreshold }}
           {{- end }}
           {{- end }}
           resources:
