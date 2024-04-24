@@ -5,11 +5,13 @@ apiserver:
     image: nginx
     imagePullPolicy: Always
     livenessProbe:
+      enabled: false
       path: "/"
       port: 80
       initialDelaySeconds: 3
       periodSeconds: 3
     readinessProbe:
+      enabled: false
       path: "/"
       port: 80
       initialDelaySeconds: 3
@@ -63,7 +65,7 @@ service:
       targetPort: 80
 
 hpa:
-  minReplicas: 2
+  minReplicas: 1 # min-replicas running at all times
   maxReplicas: 10
   container: hello-world
   metric: cpu
