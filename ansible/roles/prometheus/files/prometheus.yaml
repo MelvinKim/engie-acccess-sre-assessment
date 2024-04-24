@@ -1,7 +1,7 @@
 global:
   scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
   evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
-  # scrape_timeout is set to the global default (10s).
+  scrape_timeout: "30s"
 
 # Alertmanager configuration
 alerting:
@@ -22,3 +22,15 @@ scrape_configs:
   - job_name: "node-exporter"
     static_configs:
       - targets: ['localhost:9100']
+
+  # job to scrape metrics from the k8s cluster
+  - job_name: "prod-cluster-federation"
+    scrape_interval: "1m"
+    honor_labels: true
+    metrics_path: "/federate"
+    static_configs:
+      - targets: ['<replace-with-ingress-host-pointing-to-prometheus-service-running-in-the-k8s-cluster>']
+        labels:
+          country: "kenya"
+          environment: "prod"
+          platform: "k8s"
