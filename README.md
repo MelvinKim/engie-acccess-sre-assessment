@@ -1,5 +1,4 @@
 # SRE Challenge Project README
 
 ## System Architecture
-![alt text](https://github.com/MelvinKim/sre-challenge/blob/sre-challenge/System-architecture.drawio.png?raw=true)
-
+![alt text](https://github.com/MelvinKim/sre-challenge/blob/sre-challenge/AWSdrawio.drawio.png?raw=true)
