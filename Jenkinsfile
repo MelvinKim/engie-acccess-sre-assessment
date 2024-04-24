@@ -46,6 +46,7 @@ pipeline {
         }
 
         // make sure to configure your jenkins server with AWS credentials that have access to the EKS Cluster
+        // make sure aws cli and helm are installed
         stage('Deploy app to Kubernetes cluster') {
             steps {
                 script {
@@ -55,6 +56,7 @@ pipeline {
                         sh """
                             export AWS_PROFILE=<aws-profile-containing-kubernetes-cluster>
                             aws eks update-kubeconfig --name <k8s-cluster-name>
+                            helm dependency build
                             helm upgrade --install ${params.Service} .
                         """
                     }
