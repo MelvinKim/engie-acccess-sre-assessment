@@ -37,7 +37,7 @@ spec:
           # if a readiness probe fails the container is removed from the service endpoints, but not killed
           readinessProbe:
             httpGet:
-              path: {{ .path }} # this should point to a service health check endpoint
+              path: {{ .path }}
               port: {{ .port }}
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
