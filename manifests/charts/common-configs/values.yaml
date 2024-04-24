@@ -27,7 +27,7 @@ apiserver:
     volumeMounts:
       - name: nginx-config
         mountPath: etc/nginx/conf.d
-  - image: "melvinkimathi/engie-access-africa-sre-assessment:slim"
+  - image: "melvinkimathi/engie-access-africa-sre-assessment:1.0.0"
     imagePullPolicy: Always
     name: hello-world
     livenessProbe:
