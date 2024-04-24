@@ -11,7 +11,7 @@ pipeline {
     environment {
         DOCKER_HUB_USERNAME = credentials('<docker-hub-username-credentials-id>')
         DOCKER_HUB_PASSWORD = credentials('<docker-hub-password-credentials-id>')
-        DOCKER_IMAGE = "melvinkimathi/koko-sre-assessment:${env.BUILD_NUMBER}"
+        DOCKER_IMAGE = " melvinkimathi/engie-access-africa-sre-assessment:${env.BUILD_NUMBER}"
     }
 
     stages {
