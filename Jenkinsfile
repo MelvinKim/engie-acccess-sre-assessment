@@ -20,25 +20,31 @@ pipeline {
                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/MelvinKim/engie-acccess-sre-assessment.git']])
             }
         }
+
+        // Ensure python is installed on your jenkins server
         stage('Run tests') {
-            steps {
-                sh """
-                # run application tests
-                echo 'running application tests'
-                """
+            dir('sre_challenge') {
+                steps {
+                    sh """
+                        echo 'running application tests'
+                    """
+                }
             }
         }
+
+        // ensure the docker plugin is installed
         stage('Build docker image') {
             steps {
-                sh "docker build --platform=linux/amd64 -t ${env.DOCKER_IMAGE} ."
+                sh "docker image build --platform=linux/amd64 -t ${env.DOCKER_IMAGE} ."
             }
         }
         stage('Push docker image to docker image to docker hub') {
             steps {
                 sh "docker login -username ${env.DOCKER_HUB_USERNAME} --password ${env.DOCKER_HUB_PASSWORD}"
-                sh "docker push ${env.DOCKER_IMAGE} ."
+                sh "docker image push ${env.DOCKER_IMAGE}"
             }
         }
+
         // make sure to configure your jenkins server with AWS credentials that have access to the EKS Cluster
         stage('Deploy app to Kubernetes cluster') {
             steps {
