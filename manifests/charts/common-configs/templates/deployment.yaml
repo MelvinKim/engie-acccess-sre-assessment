@@ -22,6 +22,26 @@ spec:
         - name: {{ .name }}
           image: {{ .image }}
           imagePullPolicy: {{ .imagePullPolicy }}
+          {{- with .livenessProbe }}
+          # used to check if a container is healthy
+          # if a liveness probe fails the container is killed and restarted
+          livenessProbe:
+            httpGet:
+              path: {{ .path }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+          {{- end }}
+          {{- with .readinessProbe }}
+          # used to check when container is ready to start accepting traffic
+          # if a readiness probe fails the container is removed from the service endpoints, but not killed
+          readinessProbe:
+            httpGet:
+              path: {{ .path }} # this should point to a service health check endpoint
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+          {{- end }}
           resources:
             requests:
               cpu: {{ .resources.requests.cpu }}
