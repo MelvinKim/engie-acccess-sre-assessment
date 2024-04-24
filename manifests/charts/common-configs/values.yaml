@@ -4,18 +4,22 @@ apiserver:
   - name: nginx-server
     image: nginx
     imagePullPolicy: Always
-    livenessProbe:
-      enabled: false
-      path: "/"
+    livenessProbe: # check if pod is healthy
+      enabled: true
+      path: /
+      port: 80
+      initialDelaySeconds: 6
+      periodSeconds: 60
+      failureThreshold: 3
+      successThreshold: 1
+    readinessProbe: # check if pod is ready to start to accepting traffic
+      enabled: true
+      path: /
       port: 80
       initialDelaySeconds: 3
-      periodSeconds: 3
-    readinessProbe:
-      enabled: false
-      path: "/"
-      port: 80
-      initialDelaySeconds: 3
-      periodSeconds: 3
+      periodSeconds: 60
+      failureThreshold: 3
+      successThreshold: 1
     resources:
       requests:
         memory: 50Mi
@@ -33,15 +37,21 @@ apiserver:
     imagePullPolicy: Always
     name: hello-world
     livenessProbe:
-      path: "/"
-      port: 80
+      enabled: true
+      path: /
+      port: 5000
       initialDelaySeconds: 3
-      periodSeconds: 3
+      periodSeconds: 60
+      failureThreshold:
+      successThreshold: 1
     readinessProbe:
-      path: "/"
-      port: 80
+      enabled: true
+      path: /
+      port: 5000
       initialDelaySeconds: 3
-      periodSeconds: 3
+      periodSeconds: 60
+      failureThreshold: 3
+      successThreshold: 1
     resources:
       requests:
         cpu: 50m
